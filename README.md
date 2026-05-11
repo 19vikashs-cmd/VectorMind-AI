@@ -814,4 +814,6 @@ Under the conditions of the MIT License.
 
 See the `LICENSE` file for more details.
 
+## Author
 
+Created by Vikash
