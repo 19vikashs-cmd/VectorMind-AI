@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>VectorMind AI</title>
+
+<link rel="preconnect"
+      href="https://fonts.googleapis.com">
+
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600&display=swap"
+      rel="stylesheet">
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo-wrap">
+
+        <h1>VectorMind AI</h1>
+
+        <div class="badges">
+
+            <span class="badge hl">
+                HNSW
+            </span>
+
+            <span class="badge">
+                KD-TREE
+            </span>
+
+            <span class="badge">
+                BRUTE FORCE
+            </span>
+
+        </div>
+
+    </div>
+
+    <div class="top-right">
+
+        <span class="badge"
+              id="ollamaBadge">
+
+            loading...
+        </span>
+
+        <span id="statsLabel">
+            loading...
+        </span>
+
+    </div>
+
+</header>
+
+<div class="layout">
+
+    <!-- LEFT PANEL -->
+
+    <aside class="left-panel">
+
+        <!-- QUERY -->
+
+        <section>
+
+            <div class="sec">
+                Query
+            </div>
+
+            <div class="stack">
+
+                <input
+                    type="text"
+                    id="qInput"
+                    placeholder="binary tree, sushi, basketball..."
+                >
+
+                <button
+                    class="btn-p"
+                    onclick="runSearch()"
+                >
+                    ⚡ SEARCH
+                </button>
+
+            </div>
+
+        </section>
+
+        <!-- ALGORITHM -->
+
+        <section>
+
+            <div class="sec">
+                Algorithm
+            </div>
+
+            <div class="algo-row">
+
+                <div
+                    class="algo-btn on"
+                    data-algo="hnsw"
+                    onclick="setAlgo(this)"
+                >
+                    HNSW
+                </div>
+
+                <div
+                    class="algo-btn"
+                    data-algo="kdtree"
+                    onclick="setAlgo(this)"
+                >
+                    KD-TREE
+                </div>
+
+                <div
+                    class="algo-btn"
+                    data-algo="bruteforce"
+                    onclick="setAlgo(this)"
+                >
+                    BRUTE
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- METRIC -->
+
+        <section>
+
+            <div class="sec">
+                Distance Metric
+            </div>
+
+            <select id="metric">
+
+                <option value="cosine">
+                    Cosine Similarity
+                </option>
+
+                <option value="euclidean">
+                    Euclidean Distance
+                </option>
+
+                <option value="manhattan">
+                    Manhattan Distance
+                </option>
+
+            </select>
+
+        </section>
+
+        <!-- TOP K -->
+
+        <section>
+
+            <div class="sec">
+
+                Top-K:
+
+                <span id="kLabel">
+                    5
+                </span>
+
+            </div>
+
+            <input
+                type="range"
+                id="kSlider"
+                min="1"
+                max="10"
+                value="5"
+                oninput="document.getElementById('kLabel').innerText=this.value"
+            >
+
+        </section>
+
+        <!-- INSERT VECTOR -->
+
+        <section>
+
+            <div class="sec">
+                Insert Vector
+            </div>
+
+            <div class="stack">
+
+                <input
+                    type="text"
+                    id="addMeta"
+                    placeholder="Description..."
+                >
+
+                <select id="addCat">
+
+                    <option value="cs">
+                        AI / CS
+                    </option>
+
+                    <option value="math">
+                        Math
+                    </option>
+
+                    <option value="food">
+                        Food
+                    </option>
+
+                    <option value="sports">
+                        Sports
+                    </option>
+
+                    <option value="general">
+                        General
+                    </option>
+
+                </select>
+
+                <button
+                    class="btn-s"
+                    onclick="addVector()"
+                >
+                    + INSERT
+                </button>
+
+            </div>
+
+        </section>
+
+        <!-- BENCHMARK -->
+
+        <section>
+
+            <div class="sec">
+                Benchmark
+            </div>
+
+            <button
+                class="btn-s"
+                onclick="runBenchmark()"
+            >
+                ▶ COMPARE
+            </button>
+
+        </section>
+
+        <!-- VECTOR LEGEND -->
+
+        <section>
+
+            <div class="sec">
+                Vector Categories
+            </div>
+
+            <div class="legend-wrap">
+
+                <div class="legend-item">
+
+                    <div class="legend-dot cs-dot"></div>
+
+                    <span>
+                        AI / CS
+                    </span>
+
+                </div>
+
+                <div class="legend-item">
+
+                    <div class="legend-dot math-dot"></div>
+
+                    <span>
+                        Math
+                    </span>
+
+                </div>
+
+                <div class="legend-item">
+
+                    <div class="legend-dot food-dot"></div>
+
+                    <span>
+                        Food
+                    </span>
+
+                </div>
+
+                <div class="legend-item">
+
+                    <div class="legend-dot sports-dot"></div>
+
+                    <span>
+                        Sports
+                    </span>
+
+                </div>
+
+                <div class="legend-item">
+
+                    <div class="legend-dot general-dot"></div>
+
+                    <span>
+                        General
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </aside>
+
+    <!-- CENTER PANEL -->
+
+    <main class="center-panel">
+
+        <canvas id="scatter"></canvas>
+
+        <div class="center-overlay">
+
+            <h2>
+                Semantic Vector Search
+            </h2>
+
+            <p>
+                HNSW • KD-Tree • RAG • Ollama
+            </p>
+
+        </div>
+
+    </main>
+
+    <!-- RIGHT PANEL -->
+
+    <aside class="right-panel">
+
+        <!-- TABS -->
+
+        <div class="tabs">
+
+            <div
+                class="tab on"
+                onclick="switchTab('search', this)"
+            >
+                SEARCH
+            </div>
+
+            <div
+                class="tab"
+                onclick="switchTab('docs', this)"
+            >
+                DOCUMENTS
+            </div>
+
+            <div
+                class="tab"
+                onclick="switchTab('rag', this)"
+            >
+                ASK AI
+            </div>
+
+        </div>
+
+        <!-- SEARCH TAB -->
+
+        <div
+            class="tab-content on"
+            id="tab-search"
+        >
+
+            <div class="sec">
+                Search Latency
+            </div>
+
+            <div class="lat-big"
+                 id="latBig">
+
+                —
+            </div>
+
+            <div class="lat-sub"
+                 id="latSub">
+
+                No query yet
+            </div>
+
+            <div class="sec mt">
+                Results
+            </div>
+
+            <div
+                class="results"
+                id="results"
+            >
+
+                <div class="empty">
+                    Run a search...
+                </div>
+
+            </div>
+
+            <div class="sec mt">
+                Benchmark
+            </div>
+
+            <div id="benchBars"></div>
+
+        </div>
+
+        <!-- DOCS TAB -->
+
+        <div
+            class="tab-content"
+            id="tab-docs"
+        >
+
+            <div class="sec">
+                System Status
+            </div>
+
+            <div
+                class="ollama-status"
+                id="statusBox"
+            >
+
+                Loading...
+
+            </div>
+
+            <div class="sec mt">
+                Insert Document
+            </div>
+
+            <div class="stack">
+
+                <input
+                    type="text"
+                    id="docTitle"
+                    placeholder="Document title..."
+                >
+
+                <textarea
+                    id="docText"
+                    placeholder="Paste document..."
+                ></textarea>
+
+                <button
+                    class="btn-g"
+                    onclick="insertDocument()"
+                >
+                    ⚡ INSERT DOCUMENT
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- AI TAB -->
+
+        <div
+            class="tab-content"
+            id="tab-rag"
+        >
+
+            <div class="sec">
+                AI Chat
+            </div>
+
+            <div
+                class="chat-history"
+                id="chatHistory"
+            ></div>
+
+            <div class="chat-box">
+
+                <textarea
+                    id="ragQuestion"
+                    placeholder="Ask VectorMind AI..."
+                ></textarea>
+
+                <button
+                    class="btn-g"
+                    onclick="askAI()"
+                >
+                    🤖 ASK AI
+                </button>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
